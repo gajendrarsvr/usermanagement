@@ -17,10 +17,10 @@ class AuthController extends Controller
 
       if(auth()->attempt(['email'=>$email, 'password'=>$password])){
           $user = User::where('email', $email)->first();
-        $token = $user->createToken('user-management');
-        return ['token' => $token];
+          $token = $user->createToken('user-management');
+          return ['token' => $token];
       }else {
-        return response()->json(['status'=> 401,'message'=>'user creadential not match']);
+        return response()->json(['status'=> 401,'message'=>'User creadentials not match']);
       }
    }
 }
