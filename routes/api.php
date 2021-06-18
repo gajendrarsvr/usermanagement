@@ -1,6 +1,9 @@
 <?php
+Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api'], function () {
+    Route::post('login','AuthController@login');
+});
 
-Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:sanctum']], function () {
+Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middleware' => ['auth:sanctum']], function () {
     // Permissions
     Route::apiResource('permissions', 'PermissionsApiController');
 
