@@ -10,49 +10,139 @@ use App\Models\User;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use App\Utility\CommonUtility;
 class UsersApiController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        return new UserResource(User::with(['roles'])->get());
+        try{
+            $checkAccess = Gate::check('user_access');
+            if($checkAccess == true){
+                $userData = new UserResource(User::with(['roles'])->get());
+                if($userData != null){
+                    $msg = trans('messages.user.users');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    $data = $userData;
+                    return CommonUtility::renderJson($code, $msg,$data);
+                }else {
+                    $msg = trans('messages.user.empty_users');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+            } else{
+                $msg = trans('messages.user.not_authorize');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+            
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }   
     }
 
     public function store(StoreUserRequest $request)
     {
-        $user = User::create($request->all());
-        $user->roles()->sync($request->input('roles', []));
+        try{
+            $user = User::create($request->all());
 
-        return (new UserResource($user))
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
+            $usersData = new UserResource($user);
+            if($usersData!= null){
+                $msg = trans('messages.user.user_create');
+                $code = CommonUtility::SUCCESS_CODE;
+                $data = $usersData;
+                return CommonUtility::renderJson($code, $msg,$data);
+            }else {
+                $msg = trans('messages.user.user_not_create');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }            
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 
-    public function show(User $user)
+    public function show($id)
     {
-        abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        return new UserResource($user->load(['roles']));
+        try{
+            $checkAccess = Gate::check('user_show');
+            if($checkAccess == true ){
+                $user = User::find($id);
+                if($user != null){
+                    $msg = trans('messages.user.user_record');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    $data = new UserResource($user->load(['roles']));
+                    return CommonUtility::renderJson($code, $msg,$data);
+                }else {
+                    $msg = trans('messages.user.user_not_found');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+            }else {
+                $msg = trans('messages.user.not_authorize');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+            
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(Request $request, $id)
     {
-        $user->update($request->all());
-        $user->roles()->sync($request->input('roles', []));
+        try{
+            $user = User::find($id);
+            if($user!= null){
+                $user->update($request->all());
+                $user->roles()->sync($request->input('roles', []));
 
-        return (new UserResource($user))
-            ->response()
-            ->setStatusCode(Response::HTTP_ACCEPTED);
+                $usersData = new UserResource($user);
+                $msg = trans('messages.user.user_update');
+                $code = CommonUtility::SUCCESS_CODE;
+                $data = $usersData;
+                return CommonUtility::renderJson($code, $msg,$data);
+            }else {
+                $msg = trans('messages.user.user_not_found');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+            
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $user->delete();
-
-        return response(null, Response::HTTP_NO_CONTENT);
+        try{
+            $checkAccess = Gate::check('user_delete');
+            if($checkAccess == true){
+                $user = User::find($id);
+                if($user != null){
+                    $user->delete();
+                    $msg = trans('messages.user.user_delete');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }else {
+                    $msg = trans('messages.user.user_not_found');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+            } else {
+                $msg = trans('messages.user.not_authorize');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+            
+        }catch (\Exception $e) {
+            DB::rollback();
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 }
