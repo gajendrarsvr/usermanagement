@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Auth;
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CommonEmailSender;
 //models
 use App\Models\User;
 
@@ -69,6 +72,11 @@ class AuthController extends Controller
         }
 
         //send email code here
+
+        Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
+            'subject' => 'User Management - Reset your password ',
+            'emailData' => $userModel
+        ]));
 
 
 
