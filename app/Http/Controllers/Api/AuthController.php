@@ -5,18 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+
 use Auth;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CommonEmailSender;
 //models
 use App\Models\User;
+use App\Models\PasswordResets;
 
 //request
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\VerifyTokenRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
+
 
 class AuthController extends Controller
 {
@@ -64,24 +71,46 @@ class AuthController extends Controller
          }
     }
 
+
+    /**
+     * Fuction for send reset password link
+     */
     public function forgotPassword(ForgotPasswordRequest $request) {
         $postData = $request->all();
         $userModel = User::where('email',$postData['email'])->first();
         if(!$userModel) {
             return response()->json(['status'=> 401,'message'=>'Your email does not associated with any account.']);
         }
-
+        //Create Password Reset Token
+        $token = Str::random(60);
+        $reset_link = \url('/reset-password?token='.$token);
+        //echo $link;die;
+        DB::table('password_resets')->insert(['email' => $request->email,'token' => $token,'created_at' => Carbon::now()]);
         //send email code here
+        // Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
+        //     'subject' => 'User Management - Reset your password',
+        //     'token'   =>  $token,
+        //     'reset_link' => $reset_link,
+        //     'emailData' => $userModel
+        // ]));
+        return response()->json([
+              'status'=> 200,
+              'message' => 'We have sent reset password link on your email address please check inbox'
+        ]);
+    }
 
-        Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
-            'subject' => 'User Management - Reset your password ',
-            'emailData' => $userModel
-        ]));
+    /**
+     * Function for verify token
+     */
+    public function verifyToken(VerifyTokenRequest $request) {
+        $postData = $request->all();
+
+        $token = DB::table('password_resets')->where('token','=',$postData['token']);
+
+        return $token;
 
 
 
-
-        //return $userModel;
     }
 
 
