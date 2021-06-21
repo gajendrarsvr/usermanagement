@@ -11,5 +11,15 @@ return [
         'user_not_found' =>'User not found',
         'user_delete' =>'User delete successfully',
         'user_record'=>'User record'
-    ]
+    ],
+    'subscription' =>[
+        'subscriptions'=>'Subscriptions Data',
+        'empty_subscription' =>'There is not record found',
+        'subscription_create' =>'Subscription created successfully',
+        'subscription_not_create' =>'Subscription not created',
+        'subscription_update' =>'Subscription update successfully',
+        'subscription_not_found' =>'Subscription not found',
+        'subscription_delete' =>'Subscription delete successfully',
+        'subscription_record'=>'Subscription record'
+    ],
 ];

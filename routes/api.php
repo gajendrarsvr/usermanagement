@@ -17,4 +17,6 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
 
     // Users
     Route::apiResource('users', 'UsersApiController');
+    Route::apiResource('subscriptions', 'SubscriptionApiController');
+
 });
