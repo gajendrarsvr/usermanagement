@@ -11,6 +11,8 @@ class AppsUser extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $table = 'apps_user';
+
     protected $hidden = ['deleted_at'];
 
     protected $dates = [ 'created_at','updated_at','deleted_at'];

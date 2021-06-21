@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Apps\AppsCreateRequest;
 use App\Http\Requests\Apps\AppsUpdateRequest;
 use App\Http\Requests\Apps\AppsAssignRequest;
+
+use App\Models\User;
 use App\Models\Apps;
 use App\Models\AppsUser;
 use App\Utility\CommonUtility;
@@ -188,15 +190,44 @@ class AppsApiController extends Controller
      * Function for assign app to user
      */
     public function assignApp2User(AppsAssignRequest $request) {
+        try{
+            $postData = $request->only('app_id','user_id');
+            $appModal = Apps::find($postData['app_id']);
+            $userModal = User::find($postData['user_id']);
 
+            if(!$userModal) {
+                $msg = trans('Invalid user id');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+
+            if(!$appModal) {
+                $msg = trans('Invalid app id');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+
+            $response = AppsUser::updateOrCreate($postData,$postData);
+            if($response) {
+                $msg = trans('messages.apps_user.users_add');
+                $code = CommonUtility::SUCCESS_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            } else {
+                $msg = trans('messages.apps_user.users_add_error');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 
     /**
      * Function for assign app to user
      */
     public function getsUsersApp(Request $request,$id) {
-
-
+         echo 'getsUsersApp';die;
     }
 
 
