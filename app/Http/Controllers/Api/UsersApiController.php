@@ -16,6 +16,7 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Utility\CommonUtility;
+use App\Services\Mailers\Mailer;
 class UsersApiController extends Controller
 {
     public function index()
@@ -145,6 +146,7 @@ class UsersApiController extends Controller
             }
             
         }catch (\Exception $e) {
+            DB::rollback();
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }
@@ -263,6 +265,42 @@ class UsersApiController extends Controller
         }catch (\Exception $e) {
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
+    }
+
+    public function mail(Request $request){
+        $mailbox = array();
+        $userData = User::where('email','=',$request->email)->first();
+
+        if(!$userData){
+            $errorMessage = "No client account was found with the email address you entered.";
+            return redirect('/forget-password')->with('errorMessage', $errorMessage);
+        }
+        else{
+            $email = $request->email;
+            $name = $userData->name;
+            $token = base64_encode($email.time().$name);
+            $userData->remember_token = $token;
+            $userData->save();
+            $link = env('APP_URL', '');
+            $description = 'Dear '.$userData->first_name.' ('.$userData->email.')!<br/><br/>Recently a request was submitted to reset your password. If you did not request this, please ignore this email. It will expire and become useless in 2 hours time.
+ <br/><br/>To reset your password, please <a href="'.$link.'/reset-password?token='.$token.'" target="new"><b>Click Here</b> </a>! <br/><br/>
+ When you visit the link above, you will have the opportunity to choose a new password.';
+
+            $mailArray = array(
+                "header" => "Reset Password",
+                "description" => $description,
+                "footer" => "System Generated Email"
+            );
+
+            $mailbox['mail_body'] = json_encode($mailArray);
+            $mailbox['category'] = "Reset password";
+            $mailbox['mail_to'] = $userData->email;
+            $mailbox['subject'] = "Your login details for Updesco Technical";
+            $mailbox['layout'] = "forgot-password";
+            $mailbox['save'] = [];
+            $mailer = new Mailer;
+            $mailer->emailTo($mailbox);
         }
     }
 }
