@@ -3,8 +3,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api'], function 
     Route::post('login','AuthController@login');
     Route::post('register','AuthController@register');
     Route::post('forgot-password','AuthController@forgotPassword');
-    Route::post('verifyToken','AuthController@verifyToken');
-    Route::post('reset-password','AuthController@setNewPassword');
+    Route::post('verify-token','AuthController@verifyToken');
+    Route::post('set-new-password','AuthController@setNewPassword');
     Route::post('logout','AuthController@logout');
 });
 

@@ -22,7 +22,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\VerifyTokenRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\SetNewPasswordRequest;
 
 
 class AuthController extends Controller
@@ -84,8 +84,11 @@ class AuthController extends Controller
         //Create Password Reset Token
         $token = Str::random(60);
         $reset_link = \url('/reset-password?token='.$token);
-        //echo $link;die;
-        DB::table('password_resets')->insert(['email' => $request->email,'token' => $token,'created_at' => Carbon::now()]);
+        PasswordResets::create([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => Carbon::now(),
+        ]);
         //send email code here
         // Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
         //     'subject' => 'User Management - Reset your password',
@@ -104,16 +107,58 @@ class AuthController extends Controller
      */
     public function verifyToken(VerifyTokenRequest $request) {
         $postData = $request->all();
-
-        $token = DB::table('password_resets')->where('token','=',$postData['token']);
-
-        return $token;
-
-
-
+        $resetModel = PasswordResets::where([
+            'token' => $postData['token'],
+            'created_at' => Carbon::now()->subHours(2)
+            ])->get()->first();
+        if(!$resetModel) {
+            return response()->json([
+                'status'=> 401,
+                'message' => 'Invalid token/expire token'
+            ]);
+        } else {
+            return response()->json([
+                'status'=> 200,
+                'message' => 'Token verified successfully'
+            ]);
+        }
     }
 
+    /**
+     * Function for set new password
+     */
+    public function setNewPassword(SetNewPasswordRequest $request) {
+        $postData = $request->all();
+        $resetModel = PasswordResets::where([
+            'token' => $postData['token']
+            ])->get()->first();
+        if(!$resetModel) {
+            return response()->json([
+                'status'=> 401,
+                'message' => 'Invalid token/expire token'
+            ]);
+        } else {
 
+            $userModel = User::where(['email' => $resetModel->email])->first();
+            if(!$userModel) {
+                return response()->json([
+                    'status'=> 200,
+                    'message' => 'Token is not associated with any user'
+                ]);
+            } else {
+                $userModel->update([
+                    'password' =>  Hash::make($resetModel['password_confirmation'])
+                ]);
+                DB::table('password_resets')->where('token',$postData['token'])->delete();
+                return response()->json([
+                    'status'=> 200,
+                    'message' => 'User password changed successfully',
+                ]);
+            }
+
+        }
+
+    }
 
 
 }

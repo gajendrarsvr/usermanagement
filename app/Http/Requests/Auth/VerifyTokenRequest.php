@@ -24,7 +24,7 @@ class VerifyTokenRequest extends FormRequest
     public function rules()
     {
         return [
-           'token'=>'required'
+           'token' => 'required'
         ];
     }
 }
