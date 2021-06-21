@@ -21,4 +21,5 @@ class AppsUser extends Model
         'app_id',
         'user_id'
     ];
+    protected $table='apps_user';
 }

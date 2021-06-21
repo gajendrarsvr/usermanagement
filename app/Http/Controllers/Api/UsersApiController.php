@@ -7,6 +7,11 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
+
+use App\Models\AppsUser;
+use App\Models\Subscription;
+
+use App\Http\Resources\SubscriptionResource;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -140,7 +145,122 @@ class UsersApiController extends Controller
             }
             
         }catch (\Exception $e) {
-            DB::rollback();
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
+    }
+
+    public function getAllSubscriptionDetail($id)
+    {
+        try{
+            $user = User::find($id);
+            if($user != null){
+                $subscription = Subscription::where('user_id',$id)->with(['subscriptionPlans'])->get();
+                if(count($subscription) != 0){
+                    $subscriptionData = new SubscriptionResource($subscription);
+                    $msg = trans('messages.subscription.subscription_record');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    $data = $subscriptionData;
+                    return CommonUtility::renderJson($code, $msg,$data);
+                } else {
+                    $msg = trans('messages.subscription.empty_subscription');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+                
+            }else {
+                $msg = trans('messages.user.user_not_found');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
+    }
+
+    public function getSubscriptionDetail($id, $subscriptionId)
+    {
+        try{
+            $user = User::find($id);
+            if($user != null){
+                $subscription = Subscription::where('user_id',$id)->where('id',$subscriptionId )->with(['subscriptionPlans'])->first();
+                if($subscription != null){
+                    $subscriptionData = new SubscriptionResource($subscription);
+                    $msg = trans('messages.subscription.subscriptions');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    $data = $subscriptionData;
+                    return CommonUtility::renderJson($code, $msg,$data);
+                }else {
+                    $msg = trans('messages.user.user_subscription_not_found');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+                
+            }else {
+                $msg = trans('messages.user.user_not_found');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
+    }
+
+    public function getAllAppsDetails($id)
+    {
+        try{
+            $user = User::find($id);
+            if($user != null){
+                $appsUser = AppsUser::where('user_id',$id)->get();
+                if(count($appsUser) != 0){
+                    // $subscriptionData = new SubscriptionResource($subscription);
+                    $msg = trans('messages.apps.apps_list');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    $data = $appsUser;
+                    return CommonUtility::renderJson($code, $msg,$data);
+                } else {
+                    $msg = trans('messages.subscription.empty');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+                
+            }else {
+                $msg = trans('messages.user.user_not_found');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
+    }
+
+    public function getAppsDetail($id, $appId)
+    {
+        try{
+            $user = User::find($id);
+            if($user != null){
+                $appDetail = AppsUser::where('user_id',$id)->where('id',$appId )->first();
+                if($appDetail != null){
+                   
+                    $msg = trans('messages.apps.app_edit');
+                    $code = CommonUtility::SUCCESS_CODE;
+                    $data = $appDetail;
+                    return CommonUtility::renderJson($code, $msg,$data);
+                }else {
+                    $msg = trans('messages.user.user_app_not_found');
+                    $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+                
+            }else {
+                $msg = trans('messages.user.user_not_found');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }catch (\Exception $e) {
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }

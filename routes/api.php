@@ -15,14 +15,18 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
     // Roles
     Route::apiResource('roles', 'RolesApiController');
 
-    // Users
-    Route::apiResource('users', 'UsersApiController');
-
     //Apps
     Route::post('apps/user-assignment', 'AppsApiController@assignApp2User');
     Route::get('apps/user/{id}', 'AppsApiController@getsUsersApp');
     Route::apiResource('apps', 'AppsApiController');
 
+
+    // Users
+    Route::apiResource('users', 'UsersApiController');
+    Route::get('user/{id}/subscription', 'UsersApiController@getAllSubscriptionDetail');
+    Route::get('user/{id}/subscription/{subscription_id}', 'UsersApiController@getSubscriptionDetail');
+    Route::get('user/{id}/apps', 'UsersApiController@getAppsDetails');
+    Route::get('user/{id}/apps/{apps_id}', 'UsersApiController@getAppsDetail');
 
     //Subscriptions
     Route::apiResource('subscriptions', 'SubscriptionApiController');

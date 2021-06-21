@@ -10,9 +10,22 @@ return [
         'user_update' =>'User update successfully',
         'user_not_found' =>'User not found',
         'user_delete' =>'User delete successfully',
-        'user_record'=>'User record'
+        'user_record'=>'User record',
+        'user_subscription_not_found' =>'User subscription not found',
+        'user_app_not_found' =>'User apps not found'
+
     ],
-    'apps' => [
+    'subscription' =>[
+        'subscriptions'=>'Subscriptions Data',
+        'empty_subscription' =>'There is not record found',
+        'subscription_create' =>'Subscription created successfully',
+        'subscription_not_create' =>'Subscription not created',
+        'subscription_update' =>'Subscription update successfully',
+        'subscription_not_found' =>'Subscription not found',
+        'subscription_delete' =>'Subscription delete successfully',
+        'subscription_record'=>'Subscription record'
+    ],
+        'apps' => [
         'apps_list' => 'All apps list retrieved',
         'empty' =>'No app found',
         'not_authorize' =>"Don't have a permission",
@@ -28,14 +41,5 @@ return [
         'users_add' =>'User assign new apps',
         'users_add_error' =>"Facing issue to assign the app to user"
     ],
-    'subscription' =>[
-        'subscriptions'=>'Subscriptions Data',
-        'empty_subscription' =>'There is not record found',
-        'subscription_create' =>'Subscription created successfully',
-        'subscription_not_create' =>'Subscription not created',
-        'subscription_update' =>'Subscription update successfully',
-        'subscription_not_found' =>'Subscription not found',
-        'subscription_delete' =>'Subscription delete successfully',
-        'subscription_record'=>'Subscription record'
-    ]
+
 ];
