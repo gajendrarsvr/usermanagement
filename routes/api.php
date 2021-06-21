@@ -20,6 +20,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
 
     //Apps
     Route::apiResource('apps', 'AppsApiController');
+    Route::post('apps/user-assignment', 'AppsApiController@assignApp2User');
+    Route::get('apps/user/{id}', 'AppsApiController@getsUsersApp');
 
     //Subscriptions
     Route::apiResource('subscriptions', 'SubscriptionApiController');

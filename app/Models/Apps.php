@@ -21,6 +21,7 @@ class Apps extends Model
         'app_id',
         'app_name',
         'app_desc',
-        'app_link'
+        'app_link',
+        'created_by'
     ];
 }

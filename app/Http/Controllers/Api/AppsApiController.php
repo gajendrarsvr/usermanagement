@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\Apps\AppsCreateRequest;
+use App\Http\Requests\Apps\AppsUpdateRequest;
+use App\Http\Requests\Apps\AppsAssignRequest;
 use App\Models\Apps;
 use App\Models\AppsUser;
 use App\Utility\CommonUtility;
+use Auth;
 
 
 class AppsApiController extends Controller
@@ -55,7 +58,8 @@ class AppsApiController extends Controller
                 'app_id' => isset($postData['app_id'])?$postData['app_id']:null,
                 'app_name' => isset($postData['app_name'])?$postData['app_name']:null,
                 'app_desc' => isset($postData['app_desc'])?$postData['app_desc']:null,
-                'app_link' => isset($postData['app_link'])?$postData['app_link']:null
+                'app_link' => isset($postData['app_link'])?$postData['app_link']:null,
+                'created_by' =>  Auth::user()->id
             ]);
             if(!$created) {
                 $msg = trans('messages.apps.app_not_create');
@@ -115,7 +119,7 @@ class AppsApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AppsUpdateRequest $request, $id)
     {
         try{
             $postData = $request->all();
@@ -179,4 +183,21 @@ class AppsApiController extends Controller
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }
     }
+
+    /**
+     * Function for assign app to user
+     */
+    public function assignApp2User(AppsAssignRequest $request) {
+
+    }
+
+    /**
+     * Function for assign app to user
+     */
+    public function getsUsersApp(Request $request,$id) {
+
+
+    }
+
+
 }
