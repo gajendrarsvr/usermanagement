@@ -20,4 +20,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
 
     //Apps
     Route::apiResource('apps', 'AppsApiController');
+
+    //Subscriptions
+    Route::apiResource('subscriptions', 'SubscriptionApiController');
+
 });
