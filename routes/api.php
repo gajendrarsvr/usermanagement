@@ -17,4 +17,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
 
     // Users
     Route::apiResource('users', 'UsersApiController');
+
+    //Apps
+    Route::apiResource('apps', 'AppsApiController');
 });
