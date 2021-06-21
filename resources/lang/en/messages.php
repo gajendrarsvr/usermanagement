@@ -39,7 +39,8 @@ return [
     'apps_user' => [
         'users_list' => 'All users apps list retrieved',
         'users_add' =>'User assign new apps',
-        'users_add_error' =>"Facing issue to assign the app to user"
+        'users_add_error' =>"Facing issue to assign the app to user",
+        'users_not_exist' =>"App user not exist"
     ],
 
 ];

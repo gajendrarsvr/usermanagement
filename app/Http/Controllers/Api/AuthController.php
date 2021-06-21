@@ -90,12 +90,12 @@ class AuthController extends Controller
             'created_at' => Carbon::now(),
         ]);
         //send email code here
-        // Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
-        //     'subject' => 'User Management - Reset your password',
-        //     'token'   =>  $token,
-        //     'reset_link' => $reset_link,
-        //     'emailData' => $userModel
-        // ]));
+        Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
+            'subject' => 'User Management - Reset your password',
+            'token'   =>  $token,
+            'reset_link' => $reset_link,
+            'emailData' => $userModel
+        ]));
         return response()->json([
               'status'=> 200,
               'message' => 'We have sent reset password link on your email address please check inbox'

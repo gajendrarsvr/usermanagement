@@ -224,10 +224,35 @@ class AppsApiController extends Controller
     }
 
     /**
-     * Function for assign app to user
+     * Function for get  detail of assign app to user
      */
     public function getsUsersApp(Request $request,$id) {
-         echo 'getsUsersApp';die;
+          try{
+            $findUser = User::find($id);
+            if($findUser) {
+
+                $allApps = AppsUser::with([
+                    'app_user_detail' => function($m1) {
+                        $m1->select('id','first_name','last_name','email','phone');
+                    },
+                    'app_detail' => function($m2) {
+                        $m2->select('id','app_id','app_name');
+                    }
+                ])->select('app_id','user_id')
+                ->where(['user_id' => $id])->get()->all();
+
+                $msg = trans('messages.apps_user.users_list');
+                $code = CommonUtility::SUCCESS_CODE;
+                return CommonUtility::renderJson($code, $msg, $allApps);
+            } else {
+                $msg = trans('messages.apps_user.users_not_exist');
+                $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 
 

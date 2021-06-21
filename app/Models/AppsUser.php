@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+//Models
+use App\Models\User;
+use App\Models\Apps;
+use App\Models\AppsUser;
+
 class AppsUser extends Model
 {
     use HasFactory;
@@ -21,5 +26,16 @@ class AppsUser extends Model
         'app_id',
         'user_id'
     ];
-    protected $table='apps_user';
+
+
+    public function app_user_detail()
+    {
+        return $this->hasOne(User::class,'id','user_id');
+    }
+
+
+    public function app_detail()
+    {
+        return $this->hasOne(Apps::class,'id','app_id');
+    }
 }
