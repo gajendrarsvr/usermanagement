@@ -26,7 +26,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
     Route::apiResource('users', 'UsersApiController');
     Route::get('user/{id}/subscription', 'UsersApiController@getAllSubscriptionDetail');
     Route::get('user/{id}/subscription/{subscription_id}', 'UsersApiController@getSubscriptionDetail');
-    Route::get('user/{id}/apps', 'UsersApiController@getAppsDetails');
+    Route::get('user/{id}/apps', 'UsersApiController@getAllAppsDetails');
     Route::get('user/{id}/apps/{apps_id}', 'UsersApiController@getAppsDetail');
 
     //Subscriptions

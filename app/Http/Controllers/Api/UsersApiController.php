@@ -146,7 +146,6 @@ class UsersApiController extends Controller
             }
             
         }catch (\Exception $e) {
-            DB::rollback();
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }
@@ -215,7 +214,7 @@ class UsersApiController extends Controller
         try{
             $user = User::find($id);
             if($user != null){
-                $appsUser = AppsUser::where('user_id',$id)->get();
+                $appsUser = AppsUser::where('user_id',$id)->with(['app_detail'])->get();
                 if(count($appsUser) != 0){
                     // $subscriptionData = new SubscriptionResource($subscription);
                     $msg = trans('messages.apps.apps_list');
@@ -244,7 +243,7 @@ class UsersApiController extends Controller
         try{
             $user = User::find($id);
             if($user != null){
-                $appDetail = AppsUser::where('user_id',$id)->where('id',$appId )->first();
+                $appDetail = AppsUser::where('user_id',$id)->where('id',$appId )->with(['app_detail'])->first();
                 if($appDetail != null){
                    
                     $msg = trans('messages.apps.app_edit');
