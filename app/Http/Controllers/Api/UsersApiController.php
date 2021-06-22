@@ -20,8 +20,8 @@ class UsersApiController extends Controller
     public function index()
     {
         try{
-            $checkAccess = Gate::check('user_access');
-            if($checkAccess == true){
+            // $checkAccess = Gate::check('user_access');
+            // if($checkAccess == true){
                 $userData = new UserResource(User::with(['roles'])->get());
                 if($userData != null){
                     $msg = trans('messages.user.users');
@@ -33,11 +33,11 @@ class UsersApiController extends Controller
                     $code = CommonUtility::ERROR_CODE;
                     return CommonUtility::renderJson($code, $msg);
                 }
-            } else{
-                $msg = trans('messages.user.not_authorize');
-                $code = CommonUtility::ERROR_CODE;
-                return CommonUtility::renderJson($code, $msg);
-            }
+            // } else{
+            //     $msg = trans('messages.user.not_authorize');
+            //     $code = CommonUtility::ERROR_CODE;
+            //     return CommonUtility::renderJson($code, $msg);
+            // }
             
         }catch (\Exception $e) {
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
@@ -70,8 +70,8 @@ class UsersApiController extends Controller
     public function show($id)
     {
         try{
-            $checkAccess = Gate::check('user_show');
-            if($checkAccess == true ){
+            // $checkAccess = Gate::check('user_show');
+            // if($checkAccess == true ){
                 $user = User::find($id);
                 if($user != null){
                     $msg = trans('messages.user.user_record');
@@ -83,11 +83,11 @@ class UsersApiController extends Controller
                     $code = CommonUtility::ERROR_CODE;
                     return CommonUtility::renderJson($code, $msg);
                 }
-            }else {
-                $msg = trans('messages.user.not_authorize');
-                $code = CommonUtility::ERROR_CODE;
-                return CommonUtility::renderJson($code, $msg);
-            }
+            // }else {
+            //     $msg = trans('messages.user.not_authorize');
+            //     $code = CommonUtility::ERROR_CODE;
+            //     return CommonUtility::renderJson($code, $msg);
+            // }
             
         }catch (\Exception $e) {
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
@@ -124,8 +124,8 @@ class UsersApiController extends Controller
     {
 
         try{
-            $checkAccess = Gate::check('user_delete');
-            if($checkAccess == true){
+            // $checkAccess = Gate::check('user_delete');
+            // if($checkAccess == true){
                 $user = User::find($id);
                 if($user != null){
                     $user->delete();
@@ -137,11 +137,11 @@ class UsersApiController extends Controller
                     $code = CommonUtility::ERROR_CODE;
                     return CommonUtility::renderJson($code, $msg);
                 }
-            } else {
-                $msg = trans('messages.user.not_authorize');
-                $code = CommonUtility::ERROR_CODE;
-                return CommonUtility::renderJson($code, $msg);
-            }
+            // } else {
+            //     $msg = trans('messages.user.not_authorize');
+            //     $code = CommonUtility::ERROR_CODE;
+            //     return CommonUtility::renderJson($code, $msg);
+            // }
             
         }catch (\Exception $e) {
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());

@@ -24,7 +24,7 @@ class UpdateSubscriptionRequest extends FormRequest
     public function rules()
     {
         return [
-            'app_id'=>'required',
+            'app_id'=>'required|exists:apps,id',
             'subscription_plan' =>'required|exists:subscription_plans,id',
             'id'=>'exists:subscriptions,'.request()->route('subscription')
          ];

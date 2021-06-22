@@ -17,10 +17,12 @@ class CreateAppsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('app_id')->default(0);
             $table->string('app_name',255)->default(null);
-            $table->text('app_desc')->default(null);
-            $table->string('app_link',255)->default(null);
+            $table->text('app_desc')->nullable();
+            $table->string('app_link',255)->nullable();
             $table->unsignedBigInteger('created_by')->default(0);
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 
