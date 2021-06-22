@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 
 use Auth;
 
+use App\Utility\CommonUtility;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CommonEmailSender;
 //models
@@ -47,8 +48,19 @@ class AuthController extends Controller
                   ]
               ]
           ]);
+
+         $msg = trans('messages.auth.login_success'); $code = CommonUtility::SUCCESS_CODE;
+         return CommonUtility::renderJson($code, $msg,[
+                  'user' => $user,
+                  'token' => [
+                      'accessToken' => $token->accessToken,
+                      'expires_at' => $token->token->expires_at
+                  ]
+         ]);
+
        } else {
-          return response()->json(['status'=> 401,'message'=>'User creadentials not match']);
+           $msg = trans('messages.auth.login_failure'); $code = CommonUtility::ERROR_CODE;
+           return CommonUtility::renderJson($code, $msg);
       }
    }
 
@@ -64,10 +76,11 @@ class AuthController extends Controller
              'password' =>  Hash::make($postData['password'])
          ]);
          if($userCreated) {
-             return response()->json(['status'=> 200,
-              'message' => 'You have been registered successfully']);
+              $msg = trans('messages.auth.register_success'); $code = CommonUtility::SUCCESS_CODE;
+              return CommonUtility::renderJson($code, $msg);
          } else {
-            return response()->json(['status'=> 401,'message'=>'Opps! facing issue in create new user']);
+            $msg = trans('messages.auth.register_failure'); $code = CommonUtility::ERROR_CODE;
+            return CommonUtility::renderJson($code, $msg);
          }
     }
 
@@ -76,30 +89,38 @@ class AuthController extends Controller
      * Fuction for send reset password link
      */
     public function forgotPassword(ForgotPasswordRequest $request) {
-        $postData = $request->all();
-        $userModel = User::where('email',$postData['email'])->first();
-        if(!$userModel) {
-            return response()->json(['status'=> 401,'message'=>'Your email does not associated with any account.']);
+        try{
+                DB::beginTransaction();
+                $postData = $request->all();
+                $userModel = User::where('email',$postData['email'])->first();
+                if(!$userModel) {
+                    $msg = trans('messages.auth.reset_email_invalid'); $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+                //Create Password Reset Token
+                $token = Str::random(60);
+                $reset_link = \url('/reset-password?token='.$token);
+                PasswordResets::create([
+                    'email' => $request->email,
+                    'token' => $token,
+                    'created_at' => Carbon::now(),
+                ]);
+                //send email code here
+                Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
+                    'subject' => 'User Management - Reset your password',
+                    'token'   =>  $token,
+                    'reset_link' => $reset_link,
+                    'emailData' => $userModel
+                ]));
+                DB::commit();
+                $msg = trans('messages.auth.reset_link'); $code = CommonUtility::SUCCESS_CODE;
+                return CommonUtility::renderJson($code, $msg);
+
+         }catch (\Exception $e) {
+             DB::rollback();
+             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }
-        //Create Password Reset Token
-        $token = Str::random(60);
-        $reset_link = \url('/reset-password?token='.$token);
-        PasswordResets::create([
-            'email' => $request->email,
-            'token' => $token,
-            'created_at' => Carbon::now(),
-        ]);
-        //send email code here
-        Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
-            'subject' => 'User Management - Reset your password',
-            'token'   =>  $token,
-            'reset_link' => $reset_link,
-            'emailData' => $userModel
-        ]));
-        return response()->json([
-              'status'=> 200,
-              'message' => 'We have sent reset password link on your email address please check inbox'
-        ]);
     }
 
     /**
@@ -108,19 +129,14 @@ class AuthController extends Controller
     public function verifyToken(VerifyTokenRequest $request) {
         $postData = $request->all();
         $resetModel = PasswordResets::where([
-            'token' => $postData['token'],
-            'created_at' => Carbon::now()->subHours(2)
-            ])->get()->first();
+            'token' => $postData['token']
+            ])->where('created_at','>=', (Carbon::now()->subHours(2)))->get()->first();
         if(!$resetModel) {
-            return response()->json([
-                'status'=> 401,
-                'message' => 'Invalid token/expire token'
-            ]);
+             $msg = trans('messages.auth.token_unverify'); $code = CommonUtility::ERROR_CODE;
+             return CommonUtility::renderJson($code, $msg);
         } else {
-            return response()->json([
-                'status'=> 200,
-                'message' => 'Token verified successfully'
-            ]);
+             $msg = trans('messages.auth.token_verify'); $code = CommonUtility::SUCCESS_CODE;
+             return CommonUtility::renderJson($code, $msg);
         }
     }
 
@@ -129,35 +145,42 @@ class AuthController extends Controller
      */
     public function setNewPassword(SetNewPasswordRequest $request) {
         $postData = $request->all();
+        //return $postData;
         $resetModel = PasswordResets::where([
             'token' => $postData['token']
             ])->get()->first();
         if(!$resetModel) {
-            return response()->json([
-                'status'=> 401,
-                'message' => 'Invalid token/expire token'
-            ]);
+             $msg = trans('messages.auth.invalid_token'); $code = CommonUtility::ERROR_CODE;
+             return CommonUtility::renderJson($code, $msg);
         } else {
-
             $userModel = User::where(['email' => $resetModel->email])->first();
             if(!$userModel) {
-                return response()->json([
-                    'status'=> 200,
-                    'message' => 'Token is not associated with any user'
-                ]);
+                $msg = trans('messages.auth.token_no_user'); $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
             } else {
                 $userModel->update([
-                    'password' =>  Hash::make($resetModel['password_confirmation'])
+                    'password' =>  Hash::make(trim($postData['password_confirmation']))
                 ]);
-                DB::table('password_resets')->where('token',$postData['token'])->delete();
-                return response()->json([
-                    'status'=> 200,
-                    'message' => 'User password changed successfully',
-                ]);
+                PasswordResets::where(['token',$postData['token']])->delete();
+                $msg = trans('messages.auth.setpassword_success'); $code = CommonUtility::SUCCESS_CODE;
+                return CommonUtility::renderJson($code, $msg);
             }
-
         }
+    }
 
+    /**
+     * Function for logout the app
+     */
+    public function logout(Request $request) {
+        try{
+             $request->user()->token()->revoke();
+             $msg = trans('messages.auth.logout');
+             $code = CommonUtility::SUCCESS_CODE;
+            return CommonUtility::renderJson($code, $msg,$getAll);
+        }catch (\Exception $e) {
+            CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+            return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
+        }
     }
 
 

@@ -5,7 +5,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api'], function 
     Route::post('forgot-password','AuthController@forgotPassword');
     Route::post('verify-token','AuthController@verifyToken');
     Route::post('set-new-password','AuthController@setNewPassword');
-    Route::post('logout','AuthController@logout');
+    Route::post('logout','AuthController@logout')->middleware(['auth:api']);
 });
 
 Route::post('demomail','Api\UsersApiController@mail');

@@ -33,7 +33,10 @@ class CommonEmailSender extends Mailable
         return $this->view('email.changePassword')->subject(
             $this->data['subject']
         )->with([
-            'emailData' => $this->data['emailData']
+            'emailData' => $this->data['emailData'],
+            'token' => $this->data['token'],
+            'reset_link' => $this->data['reset_link'],
+            'subject' => $this->data['subject']
         ]);
     }
 }

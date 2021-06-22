@@ -1,6 +1,21 @@
 <?php
 
 return [
+    'auth' => [
+        'login_success' => 'You have logged in successfully',
+        'login_failure' =>'Your email & password combination is invalid',
+        'register_success' =>"You have been registered successfully",
+        'register_failure' =>"Opps! facing issue with create your account",
+        'reset_link' => 'We have successfully sent you a reset password link please check your email inbox',
+        'reset_email_invalid' => 'Your email address is invalid',
+        'reset_link_failure' => 'Opps! currently we are facing issue with sending you a reset password link',
+        'token_verify' => 'Token verified successfully',
+        'token_unverify' => 'Your link has been invalid/expired',
+        'setpassword_success' => 'Your link has been invalid/expired',
+        'invalid_token' => 'You have provided invalid/expired token',
+        'token_no_user' => 'Token is not associated with any user',
+        'logout' => 'You have been logged out successfully'
+    ],
     'user' => [
         'users' => 'Users Data',
         'empty_users' =>'There is not record found',
