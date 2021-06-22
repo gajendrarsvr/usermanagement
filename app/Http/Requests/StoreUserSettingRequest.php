@@ -25,6 +25,8 @@ class StoreUserSettingRequest extends FormRequest
     {
         return [
             'user_id' => ['required','integer','exists:users,id'],
+            'notifications'=> ['integer','in:1,0'],
+            'emails'=> ['integer','in:1,0'],
         ];
     }
 }

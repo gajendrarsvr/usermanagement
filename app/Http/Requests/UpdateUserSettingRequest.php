@@ -24,7 +24,8 @@ class UpdateUserSettingRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'notifications'=> ['integer','in:1,0'],
+            'emails'=> ['integer','in:1,0'],
         ];
     }
 }

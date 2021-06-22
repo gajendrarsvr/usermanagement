@@ -86,20 +86,30 @@ class UserSettingApiController extends Controller
 
     public function update(UpdateUserSettingRequest $request, UserSetting $user_setting)
     {
+
         try{
+
             $updated = $user_setting->update($request->all());
 
             if(!$updated) {
+
                 $msg = trans('messages.user_setting.user_setting_not_create');
+
                 $code = CommonUtility::ERROR_CODE;
+
                 return CommonUtility::renderJson($code, $msg);
             } else {
+
                 $msg = trans('messages.user_setting.user_setting_update');
+
                 $code = CommonUtility::SUCCESS_CODE;
+
                 return CommonUtility::renderJson($code, $msg);
             }
         }catch (\Exception $e) {
+
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }
     }
@@ -107,25 +117,40 @@ class UserSettingApiController extends Controller
     public function destroy(UserSetting $user_setting)
     {
         try{
+
             $model = $user_setting;
+
             if(!$model) {
+
                 $msg = trans('messages.user_setting.user_setting_not_found');
+
                 $code = CommonUtility::ERROR_CODE;
+
                 return CommonUtility::renderJson($code, $msg);
             }
 
             $deleted = $model->delete();
+
             if(!$deleted) {
+
                 $msg = trans('messages.user_setting.user_setting_not_create');
+
                 $code = CommonUtility::ERROR_CODE;
+
                 return CommonUtility::renderJson($code, $msg);
+
             } else {
+
                 $msg = trans('messages.user_setting.user_setting_delete');
+
                 $code = CommonUtility::SUCCESS_CODE;
+
                 return CommonUtility::renderJson($code, $msg);
             }
         }catch (\Exception $e) {
+
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+
             return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
         }
     }

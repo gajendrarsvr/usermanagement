@@ -31,6 +31,6 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api', 'middlewar
 
     //Subscriptions
     Route::apiResource('subscriptions', 'SubscriptionApiController');
-    Route::apiResource('user-setting', 'Api\UserSettingApiController');
+    Route::apiResource('user-setting', 'UserSettingApiController');
 
 });

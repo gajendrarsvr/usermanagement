@@ -17,8 +17,8 @@ class UserSetting extends Model
 
     protected $fillable = [
         'user_id',
-        'notification',
-        'email',
+        'notifications',
+        'emails',
         'created_at',
         'updated_at',
         'deleted_at',
