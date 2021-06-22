@@ -32,7 +32,7 @@ class MailUtility
 				if(isset($mailbox['attachment']) && $mailbox['attachment']){
 					$message->attach($mailbox['attachment']);
 				}
-    			$message->from('FROM_EMAIL_ADDRESS','ArtisansWeb@yopmail.com');
+    			$message->from(env('MAIL_FROM_ADDRESS'));
             });
             if ($mailbox) {
             	$mailbox['response'] = 'success';

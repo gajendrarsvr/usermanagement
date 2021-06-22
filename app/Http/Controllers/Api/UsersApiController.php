@@ -296,7 +296,7 @@ class UsersApiController extends Controller
             $mailbox['subject'] = "Your login details for Updesco Technical";
             $mailbox['layout'] = "forgot-password";
             $mailbox['save'] = [];
-            MailUtility::emailTo($mailbox);
+            return MailUtility::emailTo($mailbox);
         }
     }
 }
