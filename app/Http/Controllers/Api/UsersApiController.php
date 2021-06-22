@@ -16,7 +16,7 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Utility\CommonUtility;
-use App\Services\Mailers\Mailer;
+use App\Utility\MailUtility;
 class UsersApiController extends Controller
 {
     public function index()
@@ -299,8 +299,7 @@ class UsersApiController extends Controller
             $mailbox['subject'] = "Your login details for Updesco Technical";
             $mailbox['layout'] = "forgot-password";
             $mailbox['save'] = [];
-            $mailer = new Mailer;
-            $mailer->emailTo($mailbox);
+            MailUtility::emailTo($mailbox);
         }
     }
 }

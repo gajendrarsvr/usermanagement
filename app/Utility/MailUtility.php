@@ -1,10 +1,9 @@
 <?php
-namespace App\Services\Mailers;
-
+namespace App\Utility;
 use Mail;
 use View;
-use App\Services\LoggerFactory;
-class Mailer
+use App\Utility\LoggerFactory;
+class MailUtility
 {
 	/**
 	 * Add an email to the queue to be sent
@@ -17,7 +16,7 @@ class Mailer
 	 * @param  ?      $attachment [description]
 	 * @return null
 	 */
-	public function emailTo($mailbox)
+	public static function emailTo($mailbox)
 	{
 		$view = $mailbox['layout'] ? $mailbox['layout']: 'generic';
 		try{
@@ -30,13 +29,11 @@ class Mailer
                 if(isset($mailbox['mail_bcc']) && $mailbox['mail_bcc']) {
                 	$message->bcc(explode(',', $mailbox['mail_bcc']));
 				}
-
 				if(isset($mailbox['attachment']) && $mailbox['attachment']){
 					$message->attach($mailbox['attachment']);
 				}
-    			$message->from('FROM_EMAIL_ADDRESS','Artisans Web');
+    			$message->from('FROM_EMAIL_ADDRESS','ArtisansWeb@yopmail.com');
             });
-
             if ($mailbox) {
             	$mailbox['response'] = 'success';
             }
@@ -45,7 +42,6 @@ class Mailer
             return response()->json(['error' => $e->getMessage()],400);
 			$errorMessage=array();
 			$errorMessage['message']=$e->getMessage();
-
 			if ($mailbox) {
 				$mailbox['response'] = $e->getMessage();
 			}
@@ -53,13 +49,11 @@ class Mailer
 			$this->log->info('Issue in email sending:',$errorMessage);
 	  	}
     }
-
-	public function queueTo($queue, $email, $view, $data, $subject, $attachment = null, $attachment_options = null)
+	public static function queueTo($queue, $email, $view, $data, $subject, $attachment = null, $attachment_options = null)
 	{
 		if (is_string($email)) {
 			$email = trim($email);
 		}
-
 		if (is_array($email)) {
 			$email = array_map(
 				function ($e) {
@@ -73,12 +67,10 @@ class Mailer
 			$view_text=$view;
 		}
 		try{
-
 		\Mail::queue(
 			['text'=>$view_text,'html'=>$view], $data, function ($message) use ($email, $subject, $attachment, $attachment_options) {
 				$message->to($email)->subject($subject);
 				$message->from(env('MAIL_DEFAULT_FROM'));
-
 				if ($attachment != null) {
 					$message->attachData($attachment, "parking-coupon.jpg");
 				}
