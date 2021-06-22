@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserSetting extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $dates = [
         'created_at',

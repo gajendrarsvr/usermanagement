@@ -105,7 +105,7 @@ class UserSettingApiController extends Controller
 
             if(!$user_setting) {
 
-                $msg = trans('messages.user_setting.user_setting_not_create');
+                $msg = trans('messages.user_setting.user_setting_not_found');
 
                 $code = CommonUtility::ERROR_CODE;
 
@@ -145,22 +145,12 @@ class UserSettingApiController extends Controller
 
             $deleted = $user_setting->delete();
 
-            if(!$deleted) {
-
-                $msg = trans('messages.user_setting.user_setting_not_create');
-
-                $code = CommonUtility::ERROR_CODE;
-
-                return CommonUtility::renderJson($code, $msg);
-
-            } else {
-
                 $msg = trans('messages.user_setting.user_setting_delete');
 
                 $code = CommonUtility::SUCCESS_CODE;
 
                 return CommonUtility::renderJson($code, $msg);
-            }
+
         }catch (\Exception $e) {
 
             CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
