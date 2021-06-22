@@ -13,8 +13,12 @@ class CreateAppsUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('apps_users', function (Blueprint $table) {
+        Schema::create('apps_user', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('app_id');
+            $table->foreign('app_id')->references('id')->on('apps')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ class CreateAppsUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('apps_users');
+        Schema::dropIfExists('apps_user');
     }
 }

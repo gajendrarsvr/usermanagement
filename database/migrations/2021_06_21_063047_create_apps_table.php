@@ -15,6 +15,11 @@ class CreateAppsTable extends Migration
     {
         Schema::create('apps', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('app_id')->default(0);
+            $table->string('app_name',255)->default(null);
+            $table->text('app_desc')->default(null);
+            $table->string('app_link',255)->default(null);
+            $table->unsignedBigInteger('created_by')->default(0);
             $table->timestamps();
         });
     }
