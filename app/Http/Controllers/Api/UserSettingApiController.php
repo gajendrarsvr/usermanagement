@@ -66,32 +66,44 @@ class UserSettingApiController extends Controller
 
     }
 
-    public function show(UserSetting $user_setting)
+    public function show($user_setting)
     {
         try{
-        $model = new UserSettingResource($user_setting);
-        if(!$model) {
-            $msg = trans('messages.user_setting.user_setting_not_found');
-            $code = CommonUtility::ERROR_CODE;
-            return CommonUtility::renderJson($code, $msg);
-         }
-         $msg = trans('messages.user_setting.user_setting_edit');
-         $code = CommonUtility::SUCCESS_CODE;
-        return CommonUtility::renderJson($code, $msg,$model);
-    }catch (\Exception $e) {
+            $user_setting = UserSetting::find($user_setting);
+
+            if(!$user_setting) {
+
+                $msg = trans('messages.user_setting.user_setting_not_found');
+
+                $code = CommonUtility::ERROR_CODE;
+
+                return CommonUtility::renderJson($code, $msg);
+            }
+
+            $msg = trans('messages.user_setting.user_setting_edit');
+
+            $code = CommonUtility::SUCCESS_CODE;
+
+            $model = new UserSettingResource($user_setting);
+
+            return CommonUtility::renderJson($code, $msg,$model);
+
+        }catch (\Exception $e) {
+
         CommonUtility::logException(__METHOD__, $e->getFile(), $e->getLine(), $e->getMessage());
+
         return CommonUtility::renderJson(CommonUtility::ERROR_CODE, $e->getMessage());
     }
     }
 
-    public function update(UpdateUserSettingRequest $request, UserSetting $user_setting)
+    public function update(UpdateUserSettingRequest $request, $user_setting)
     {
 
         try{
 
-            $updated = $user_setting->update($request->all());
+            $user_setting = UserSetting::find($user_setting);
 
-            if(!$updated) {
+            if(!$user_setting) {
 
                 $msg = trans('messages.user_setting.user_setting_not_create');
 
@@ -99,6 +111,8 @@ class UserSettingApiController extends Controller
 
                 return CommonUtility::renderJson($code, $msg);
             } else {
+
+                $updated = $user_setting->update($request->all());
 
                 $msg = trans('messages.user_setting.user_setting_update');
 
@@ -114,13 +128,13 @@ class UserSettingApiController extends Controller
         }
     }
 
-    public function destroy(UserSetting $user_setting)
+    public function destroy($user_setting)
     {
         try{
 
-            $model = $user_setting;
+            $user_setting = UserSetting::find($user_setting);
 
-            if(!$model) {
+            if(!$user_setting) {
 
                 $msg = trans('messages.user_setting.user_setting_not_found');
 
@@ -129,7 +143,7 @@ class UserSettingApiController extends Controller
                 return CommonUtility::renderJson($code, $msg);
             }
 
-            $deleted = $model->delete();
+            $deleted = $user_setting->delete();
 
             if(!$deleted) {
 
