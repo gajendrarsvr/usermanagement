@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserSettingRequest;
 use App\Http\Requests\UpdateUserSettingRequest;
+use App\Http\Requests\UserSettingRequest;
 use App\Http\Resources\UserSettingResource;
 use App\Models\UserSetting;
 use Gate;
@@ -14,12 +15,21 @@ use App\Utility\CommonUtility;
 
 class UserSettingApiController extends Controller
 {
-    public function index()
+    public function index(UserSettingRequest $request)
     {
+
         try{
 
-        $getAll = new UserSettingResource(UserSetting::all());
+        $getAll =  UserSettingResource::collection(UserSetting::where('user_id',$request->user_id)->get());
 
+        if($getAll){
+
+            $msg = trans('messages.user_setting.user_setting_not_found');
+
+            $code = CommonUtility::SUCCESS_CODE;
+
+           return CommonUtility::renderJson($code, $msg);
+        }
         $msg = trans('messages.user_setting.user_setting_list');
 
         $code = CommonUtility::SUCCESS_CODE;
