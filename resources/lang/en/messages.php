@@ -65,7 +65,7 @@ return [
         'create' =>'New user setting created successfully',
         'user_setting_not_create' =>'Facing issue in creating new user setting',
         'user_setting_update' =>'User Setting update successfully',
-        'user_setting_not_found' =>'Invalid user setting id assigned',
+        'user_setting_not_found' =>'User Setting not found',
         'user_setting_delete' =>'User Setting deleted successfully',
         'user_setting_edit'=>'User Setting record retrieved'
     ],
