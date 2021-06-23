@@ -68,7 +68,6 @@ class SocialLoginApiController extends Controller
     }
     public function handleFacebookCallback(Request $request)
     {
-
         try {
             $user = Socialite::driver('facebook')->user();
             if ($user->email === null) {

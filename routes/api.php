@@ -10,14 +10,17 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api'], function 
 
 
     Route::group(['middleware' => ['web']], function () {
+
+        //login with google
         Route::get('auth/google','SocialLoginApiController@redirectToGoogle');
         Route::get('auth/google/callback','SocialLoginApiController@handleGoogleCallback');
-    });
- 
-    Route::group(['middleware' => ['web']], function () {
-        Route::get('auth/facebook', 'SocialLoginApiController@redirectToFacebook');
+
+        //login with facebook
+        Route::get('v1/auth/facebook', 'SocialLoginApiController@redirectToFacebook');
         Route::get('auth/facebook/callback', 'SocialLoginApiController@handleFacebookCallback');
     });
+ 
+    
 });
 
 Route::post('demomail','Api\UsersApiController@mail');
