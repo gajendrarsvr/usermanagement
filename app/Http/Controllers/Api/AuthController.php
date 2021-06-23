@@ -106,7 +106,7 @@ class AuthController extends Controller
                     'created_at' => Carbon::now(),
                 ]);
                 //send email code here
-                Mail::to('gajendra.pawar@rsvrtech.com')->send(new CommonEmailSender([
+                Mail::to($request->email)->send(new CommonEmailSender([
                     'subject' => 'User Management - Reset your password',
                     'token'   =>  $token,
                     'reset_link' => $reset_link,
@@ -161,7 +161,7 @@ class AuthController extends Controller
                 $userModel->update([
                     'password' =>  Hash::make(trim($postData['password_confirmation']))
                 ]);
-                PasswordResets::where(['token',$postData['token']])->delete();
+                PasswordResets::where(['token' => $postData['token']])->delete();
                 $msg = trans('messages.auth.setpassword_success'); $code = CommonUtility::SUCCESS_CODE;
                 return CommonUtility::renderJson($code, $msg);
             }
