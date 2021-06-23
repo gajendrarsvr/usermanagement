@@ -3,7 +3,7 @@
 return [
     'auth' => [
         'login_success' => 'You have logged in successfully',
-        'login_failure' =>'Your email & password combination is invalid',
+        'login_failure' =>'Login credential is invalid',
         'register_success' =>"You have been registered successfully",
         'register_failure' =>"Opps! facing issue with create your account",
         'reset_link' => 'We have successfully sent you a reset password link please check your email inbox',
@@ -27,7 +27,9 @@ return [
         'user_delete' =>'User delete successfully',
         'user_record'=>'User record',
         'user_subscription_not_found' =>'User subscription not found',
-        'user_app_not_found' =>'User apps not found'
+        'user_app_not_found' =>'User apps not found',
+        'user_exist' =>'User already exist with this email id',
+        'user_email_not_found' =>'Email field is empty please first add email after that you logged in  '
 
     ],
     'subscription' =>[

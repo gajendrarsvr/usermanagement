@@ -32,22 +32,34 @@ class AuthController extends Controller
    /**
     * Function for get user logged in
    */
-   public function login(LoginRequest $request)  {
-       $postData = $request->all();
-       if(auth()->attempt(['email' => $postData['email'], 'password' => $postData['password']])){
-          $user = User::select('id','first_name','last_name','email','phone')->where('email', $postData['email'])->first();
-          $token = $user->createToken('user-management');
-          return response()->json([
-              'status'=> 200,
-              'message' => 'You have been logged in successfully',
-              'data' => [
-                  'user' => $user,
-                  'token' => [
-                      'accessToken' => $token->accessToken,
-                      'expires_at' => $token->token->expires_at
-                  ]
-              ]
-          ]);
+    public function login(LoginRequest $request)  {
+        $postData = $request->all();
+        if(isset($postData['email'])){
+            if(auth()->attempt(['email' => $postData['email'], 'password' => $postData['password']])){
+                $user = User::select('id','name','email','phone','username')->where('email', $postData['email'])->first();
+                $token = $user->createToken('user-management');
+            }
+            else {
+                $msg = trans('messages.auth.login_failure'); $code = CommonUtility::ERROR_CODE;
+                return CommonUtility::renderJson($code, $msg);
+            }
+        }else if(isset($postData['phone'])){
+                if(auth()->attempt(['phone' => $postData['phone'], 'password' => $postData['password']])){
+                    $user = User::select('id','name','email','phone','username')->where('phone', $postData['phone'])->first();
+                    $token = $user->createToken('user-management'); 
+                } else {
+                    $msg = trans('messages.auth.login_failure'); $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }
+        }else if(isset($postData['username'])){
+                if(auth()->attempt(['username' => $postData['username'], 'password' => $postData['password']])){
+                    $user = User::select('id','name','email','phone','username')->where('username', $postData['username'])->first();
+                    $token = $user->createToken('user-management'); 
+                } else {
+                    $msg = trans('messages.auth.login_failure'); $code = CommonUtility::ERROR_CODE;
+                    return CommonUtility::renderJson($code, $msg);
+                }            
+        }
 
          $msg = trans('messages.auth.login_success'); $code = CommonUtility::SUCCESS_CODE;
          return CommonUtility::renderJson($code, $msg,[
@@ -57,12 +69,7 @@ class AuthController extends Controller
                       'expires_at' => $token->token->expires_at
                   ]
          ]);
-
-       } else {
-           $msg = trans('messages.auth.login_failure'); $code = CommonUtility::ERROR_CODE;
-           return CommonUtility::renderJson($code, $msg);
-      }
-   }
+    }
 
     /**
     * Fucntion for get user register
@@ -73,7 +80,10 @@ class AuthController extends Controller
              'first_name' => $postData['first_name'],
              'last_name' => $postData['last_name'],
              'email' => $postData['email'],
-             'password' =>  Hash::make($postData['password'])
+             'password' =>  Hash::make($postData['password']),
+             'phone' => $postData['phone'],
+             'username' =>$postData['username'],
+             'name' => $postData['first_name'] .' '. $postData['last_name']
          ]);
          if($userCreated) {
               $msg = trans('messages.auth.register_success'); $code = CommonUtility::SUCCESS_CODE;

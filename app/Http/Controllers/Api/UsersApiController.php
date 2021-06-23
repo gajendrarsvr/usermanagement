@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Utility\CommonUtility;
 use App\Utility\MailUtility;
+use Hash;
 class UsersApiController extends Controller
 {
     public function index()
@@ -45,10 +46,19 @@ class UsersApiController extends Controller
         }   
     }
 
-    public function store(StoreUserRequest $request)
+    public function store(RegisterRequest $request)
     {
         try{
-            $user = User::create($request->all());
+            $postData = $request->all();
+            $user =  User::create([
+                'first_name' => $postData['first_name'],
+                'last_name' => $postData['last_name'],
+                'email' => $postData['email'],
+                'password' =>  Hash::make($postData['password']),
+                'phone' => $postData['phone'],
+                'username' =>$postData['username'],
+                'name' => $postData['first_name'] .' '. $postData['last_name']
+            ]);
 
             $usersData = new UserResource($user);
             if($usersData!= null){

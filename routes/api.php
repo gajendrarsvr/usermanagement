@@ -6,6 +6,18 @@ Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api'], function 
     Route::post('verify-token','AuthController@verifyToken');
     Route::post('set-new-password','AuthController@setNewPassword');
     Route::post('logout','AuthController@logout')->middleware(['auth:api']);
+
+
+
+    Route::group(['middleware' => ['web']], function () {
+        Route::get('auth/google','SocialLoginApiController@redirectToGoogle');
+        Route::get('auth/google/callback','SocialLoginApiController@handleGoogleCallback');
+    });
+ 
+    Route::group(['middleware' => ['web']], function () {
+        Route::get('auth/facebook', 'SocialLoginApiController@redirectToFacebook');
+        Route::get('auth/facebook/callback', 'SocialLoginApiController@handleFacebookCallback');
+    });
 });
 
 Route::post('demomail','Api\UsersApiController@mail');
